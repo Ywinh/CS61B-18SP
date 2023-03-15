@@ -66,6 +66,8 @@ public class MergeSort {
             Queue<Item> q1, Queue<Item> q2) {
         // Your code here!
         Queue<Item> q = new Queue<>();
+        if(q1.isEmpty()) return q2;
+        if(q2.isEmpty()) return q1;
 
         while(!q1.isEmpty() || !q2.isEmpty()){
             q.enqueue(getMin(q1,q2));
@@ -78,16 +80,27 @@ public class MergeSort {
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
         // Your code here!
-        if(items.size() == 1) return items;
+        if(items.size() == 1 || items.isEmpty()) return items;
 
         Queue<Queue<Item>> q = makeSingleItemQueues(items);
-        Queue<Item> res;
-        res = mergeSortedQueues(q.dequeue(),q.dequeue());
-        while(!q.isEmpty()) {
-            res = mergeSortedQueues(res, q.dequeue());
+
+        //参考了flypig的解法，效率更好，模拟一层一层往下merge，o(logn)，而不是o(n)的merge
+        while(q.size()!=1) {
+            Queue<Queue<Item>> res = new Queue<>();
+            while(!q.isEmpty())
+            {
+                Queue<Item> q1 = q.dequeue();
+                Queue<Item> q2;
+                if(q.isEmpty()){
+                    q2 = new Queue<>();
+                }else{
+                    q2 = q.dequeue();
+                }
+                res.enqueue( mergeSortedQueues(q1,q2));
+            }
+            q = res;
         }
-        items = res;
-        return items;
+        return q.dequeue();
     }
 
     @Test
