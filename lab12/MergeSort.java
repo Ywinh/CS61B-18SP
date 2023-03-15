@@ -1,4 +1,9 @@
 import edu.princeton.cs.algs4.Queue;
+import org.junit.Test;
+
+import java.awt.desktop.SystemEventListener;
+
+import static org.junit.Assert.*;
 
 public class MergeSort {
     /**
@@ -35,7 +40,13 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
         // Your code here!
-        return null;
+        Queue<Queue<Item>> res = new Queue<>();
+        for(Item x : items){
+            Queue<Item> temp = new Queue<>();
+            temp.enqueue(x);
+            res.enqueue(temp);
+        }
+        return res;
     }
 
     /**
@@ -54,13 +65,48 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
         // Your code here!
-        return null;
+        Queue<Item> q = new Queue<>();
+
+        while(!q1.isEmpty() || !q2.isEmpty()){
+            q.enqueue(getMin(q1,q2));
+        }
+
+        return q;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
         // Your code here!
+        if(items.size() == 1) return items;
+
+        Queue<Queue<Item>> q = makeSingleItemQueues(items);
+        Queue<Item> res;
+        res = mergeSortedQueues(q.dequeue(),q.dequeue());
+        while(!q.isEmpty()) {
+            res = mergeSortedQueues(res, q.dequeue());
+        }
+        items = res;
         return items;
     }
+
+    @Test
+    public static void main(String[] args){
+        Queue<Integer> test = new Queue<>();
+        test.enqueue(10);
+        test.enqueue(14);
+        test.enqueue(2);
+        test.enqueue(3);
+        test.enqueue(0);
+        test.enqueue(9);
+        test.enqueue(14);
+        //print original
+        System.out.println(test);
+
+        //print sorted
+        test = MergeSort.mergeSort(test);
+        System.out.println(test);
+
+    }
+
 }
